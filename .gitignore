@@ -37,6 +37,7 @@ node_modules/
 
 # Static files (adjust path if needed)
 static/
+staticfiles/
 
 # Packages
 uv.lock
@@ -44,3 +45,6 @@ uv.lock
 # Cache files or other environment-specific files
 *.log
 
+.python_history
+.local/
+.npm/

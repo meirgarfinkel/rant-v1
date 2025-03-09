@@ -1,0 +1,7 @@
+services:
+  web:
+    volumes:
+      - .:/app  # Mounts entire project
+      - /app/staticfiles  # Ensures Django can collect static files
+      - /app/theme/static_src:/app/theme/static_src  # Tailwind sources
+      - /app/theme/static:/app/theme/static  # Tailwind output folder

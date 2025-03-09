@@ -1,0 +1,15 @@
+{
+  "cookiecutter": {
+    "app_name": "theme",
+    "_copy_without_render": [
+      "templates/base.html"
+    ],
+    "_template": "/app/.venv/lib/python3.12/site-packages/tailwind",
+    "_output_dir": "/app",
+    "_repo_dir": "/app/.venv/lib/python3.12/site-packages/tailwind/app_template",
+    "_checkout": null
+  },
+  "_cookiecutter": {
+    "app_name": "theme"
+  }
+}

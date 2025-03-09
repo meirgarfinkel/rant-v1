@@ -9,4 +9,20 @@ dependencies = [
     "gunicorn>=23.0.0",
     "psycopg2-binary>=2.9.10",
     "python-dotenv>=1.0.1",
+    "cryptography>=44.0.2",
+    "hx-requests>=0.35.4",
+    "django-tailwind>=3.8.0",
+]
+
+[dependency-groups]
+dev = [
+    "cookiecutter>=2.6.0",
+    "django-tailwind[reload]>=3.8.0",
+    "djlint>=1.36.4",
+    "ipdb>=0.13.13",
+    "pre-commit>=4.1.0",
+    "pre-commit-hooks>=5.0.0",
+    "pytest>=8.3.5",
+    "pytest-django>=4.10.0",
+    "ruff>=0.9.9",
 ]

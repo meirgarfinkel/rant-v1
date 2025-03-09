@@ -1,47 +1,46 @@
 # Use a Python image with uv pre-installed
 FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
 
-# Install the project into `/app`
+# Set the working directory
 WORKDIR /app
 
-# Ensure the UV binary is on the PATH
-ENV PATH="/root/.local/bin:$PATH"
-
-# Set environment variables for Python and UV
+# Set Python environment variables
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     UV_COMPILE_BYTECODE=1
 
-# Install system dependencies and clean up apt caches
+# Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    git bash build-essential libpq-dev && \
+    git bash build-essential libpq-dev python3-pip nodejs npm && \
     rm -rf /var/lib/apt/lists/*
 
-# Create a group with GID 1000
-RUN groupadd --gid 1000 docker
+# Ensure pip is installed/upgraded
+RUN python -m ensurepip --upgrade && python -m pip install --upgrade pip
 
-# Create a non-root user with UID 1000, GID 1000, and /app as the home directory
-RUN useradd --uid 1000 --gid 1000 --no-create-home --home /app --shell /bin/bash docker
+# Create a custom home directory and a non-root user "docker" with UID/GID 1000
+RUN mkdir -p /home && \
+    groupadd --gid 1000 docker && \
+    useradd --uid 1000 --gid 1000 --create-home --home-dir /home/docker --shell /bin/bash docker
 
-# Copy the project files into the image (including pyproject.toml)
+# Copy the project files into the image
 COPY . /app
 
-# Use BuildKit caching to install and lock dependencies using UV.
-# Mount cache for UV and create lockfile then install dependencies
+# Use uv to install Python dependencies from pyproject.toml
 RUN --mount=type=cache,target=/app/.cache/uv \
-    uv lock && uv sync --frozen
+    uv lock && uv sync --no-group dev --frozen
 
-# Collect static files for Django (adjust/manage if needed)
-RUN uv run manage.py collectstatic --noinput
+# Copy the entrypoint script into the image and mark it executable
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
-# Change ownership of /app to the non-root user
+# Change ownership of /app so that the non-root user can access it
 RUN chown -R docker:docker /app
 
-# Switch to non-root user
+# Switch to the non-root user
 USER docker
 
-# Expose the port that Gunicorn will run on
+# Expose port 8000
 EXPOSE 8000
 
-# Run the Django application using Gunicorn
-CMD ["uv", "run", "gunicorn", "-b", ":8000", "app.wsgi:application"]
+# Use the entrypoint script to start processes
+ENTRYPOINT ["/app/entrypoint.sh"]
