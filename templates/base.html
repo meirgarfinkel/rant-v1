@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        {% block head_title %}
+            <title>Suggestion Box</title>
+        {% endblock head_title %}
+        <link rel="stylesheet" href="{% static 'css/dist/styles.css' %}">
+    </head>
+    <body class="bg-white text-black">
+        <!-- Navbar -->
+        <nav class="bg-white shadow-md">
+            <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+                <a href="{% url 'home' %}" class="text-xl font-semibold text-gray-800">Suggestion Box</a>
+                <div class="space-x-4">
+                    {% if user.is_authenticated %}
+                        <span class="text-gray-700">{{ user.email }}</span>
+                        <form action="{% url 'users:logout' %}" method="post" class="inline">
+                            {% csrf_token %}
+                            <button type="submit" class="text-blue-500 hover:underline">Logout</button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'users:login' %}" class="text-blue-500 hover:underline">Login</a>
+                        <a href="{% url 'users:signup' %}" class="text-blue-500 hover:underline">Sign Up</a>
+                    {% endif %}
+                    <a href="{% url 'suggestions:suggestion_list' %}"
+                       class="text-black hover:text-blue-500">My Suggestions</a>
+                    <a href="{% url 'suggestions:suggestion_create' %}"
+                       class="text-black hover:text-blue-500">New Suggestion</a>
+                </div>
+            </div>
+        </nav>
+        <!-- Main Content -->
+        <div class="container mx-auto px-4 py-6">
+            {% block content %}
+            {% endblock content %}
+        </div>
+    </body>
+</html>
